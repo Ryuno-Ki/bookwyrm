@@ -73,6 +73,7 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", True)
+DEBUG = True
 USE_HTTPS = env.bool("USE_HTTPS", not DEBUG)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", ["*"])
@@ -87,6 +88,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "debug_toolbar",
     "sass_processor",
     "bookwyrm",
     "celery",
@@ -97,6 +99,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -190,6 +193,16 @@ STATICFILES_FINDERS = [
 
 SASS_PROCESSOR_INCLUDE_FILE_PATTERN = r"^.+\.[s]{0,1}(?:a|c)ss$"
 SASS_PROCESSOR_ENABLED = True
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": "bookwyrm.middleware.show_toolbar",
+}
+
+if DEBUG:
+    import socket
+
+    hostname, skip, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 # minify css is production but not dev
 if not DEBUG:
