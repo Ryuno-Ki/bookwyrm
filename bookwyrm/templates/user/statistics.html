@@ -15,12 +15,21 @@
 {% if is_self %}
 <div>
     <div class="is-mobile field is-grouped">
-    This content is subject to change in subsequent Pull Requests.
-    {% for shelf in shelves %}
-        {% for book in shelf.books %}
-            Book was published in {{ book.published_date.year }}
-        {% endfor %}
-    {% endfor %}
+        <ol>
+            {% for shelf in shelves %}
+                In shelf {{ shelf.name }}:
+                {% if shelf.books.count %}
+                    {% for book in shelf.books %}
+                        <li>
+                            {{ book.title }} was published in {{ book.published_date.year }}.
+                            {% if book.latest_readthrough %}
+                                Last readthrough: {{ book.latest_readthrough.finish_date }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </ol>
     </div>
 </div>
 {% endif %}
